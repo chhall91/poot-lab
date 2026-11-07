@@ -2,7 +2,7 @@ import {createRequire} from 'module';const require=createRequire('/tmp/pw/');con
 const b=await chromium.launch({executablePath:'/usr/bin/google-chrome',args:['--autoplay-policy=user-gesture-required']});const p=await b.newPage({...d,acceptDownloads:true});const errs=[];p.on('pageerror',e=>errs.push(e.message));
 await p.goto(process.argv[2]);await p.waitForTimeout(800);
 const before=await p.evaluate(()=>typeof ctx==='undefined'||!ctx);
-await p.fill('#desc','angry tiny squeaky poot');await p.click('#go');await p.waitForFunction(()=>window.lastSamples,null,{timeout:15000});
+await p.fill('#desc','angry tiny squeaky poot');await p.click('#go');await p.waitForFunction(()=>typeof lastSamples!=='undefined'&&lastSamples,null,{timeout:15000});
 const r=await p.evaluate(()=>({mood:document.getElementById('mood').textContent,why:why.textContent,state:ctx&&ctx.state,len:lastSamples.length,rep:replay.disabled,src:document.getElementById('src').textContent,params:document.getElementById('params').textContent,peak:lastSamples.reduce((m,v)=>Math.max(m,Math.abs(v)),0)}));
 await p.screenshot({path:'/workspace/poot-lab/screenshot.png',fullPage:true});
 await p.fill('#desc','blorp');await p.click('#go');const fb=await p.textContent('#mood');
