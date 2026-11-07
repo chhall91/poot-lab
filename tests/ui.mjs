@@ -2,10 +2,11 @@ import {createRequire} from 'module';const require=createRequire('/tmp/pw/');con
 const b=await chromium.launch({executablePath:'/usr/bin/google-chrome',args:['--autoplay-policy=user-gesture-required']});const p=await b.newPage({...d,acceptDownloads:true});const errs=[];p.on('pageerror',e=>errs.push(e.message));
 await p.goto(process.argv[2]);await p.waitForTimeout(800);
 const before=await p.evaluate(()=>typeof ctx==='undefined'||!ctx);
-await p.fill('#desc','angry tiny squeaky poot');await p.click('#go');await p.waitForTimeout(500);
-const r=await p.evaluate(()=>({mood:document.getElementById('mood').textContent,why:why.textContent,state:ctx&&ctx.state,len:lastSamples.length,rep:replay.disabled}));
+await p.fill('#desc','angry tiny squeaky poot');await p.click('#go');await p.waitForFunction(()=>window.lastSamples,null,{timeout:15000});
+const r=await p.evaluate(()=>({mood:document.getElementById('mood').textContent,why:why.textContent,state:ctx&&ctx.state,len:lastSamples.length,rep:replay.disabled,src:document.getElementById('src').textContent,params:document.getElementById('params').textContent,peak:lastSamples.reduce((m,v)=>Math.max(m,Math.abs(v)),0)}));
 await p.screenshot({path:'/workspace/poot-lab/screenshot.png',fullPage:true});
 await p.fill('#desc','blorp');await p.click('#go');const fb=await p.textContent('#mood');
 await p.click('#stop');await p.click('#random');await p.click('.chips button');
 const [dl]=await Promise.all([p.waitForEvent('download'),p.click('#dl')]);
-console.log(JSON.stringify({noCtxBeforeTap:before,...r,fallback:fb,download:dl.suggestedFilename(),errs}));await b.close();
+await p.waitForTimeout(3000);const cached=await p.evaluate(async()=>{const k=await caches.keys();const c=await caches.open(k[0]);return [k,(await c.keys()).filter(r=>r.url.includes('sounds/')).length]});const wavBytes=require('fs').statSync(await dl.path()).size;
+console.log(JSON.stringify({cached,wavBytes,noCtxBeforeTap:before,...r,fallback:fb,download:dl.suggestedFilename(),errs}));await b.close();

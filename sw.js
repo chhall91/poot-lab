@@ -1,4 +1,4 @@
-const C='poot-lab-v1',F=['./','index.html','app.js','synth.js','manifest.json','icon-192.png','icon-512.png'];
+const C='poot-lab-v2',F=['./','index.html','app.js','synth.js','manifest.json','icon-192.png','icon-512.png','clips.js','LICENSES.md','sounds/short1.m4a','sounds/short2.m4a','sounds/short3.m4a','sounds/squeaky2.m4a','sounds/deep1.m4a','sounds/deep2.m4a','sounds/deep3.m4a','sounds/long1.m4a','sounds/long2.m4a','sounds/medium1.m4a','sounds/medium2.m4a','sounds/wet1.m4a','sounds/loud1.m4a'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(F)))});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).then(r=>{const cp=r.clone();caches.open(C).then(c=>c.put(e.request,cp));return r}).catch(()=>caches.match(e.request,{ignoreSearch:true}))));
